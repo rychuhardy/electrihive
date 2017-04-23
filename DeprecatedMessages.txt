@@ -1,0 +1,3 @@
+W pliku:
+    Anaconda3\lib\site-packages\networkx\drawing\nx_pylab.py
+zakomentować linie 126, 136, 138 (wywołania funkcji hold() lub ishold() )
