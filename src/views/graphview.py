@@ -36,5 +36,7 @@ class GraphView(tkinter.PanedWindow):
     def updateGraph(self, G):
         self.Graph = G
         pos = nx.spring_layout(self.Graph)
+        nx.draw_networkx_labels(self.Graph, pos, ax=self.subplot, font_size=10, font_family='sans-serif')
+        nx.draw_networkx_edge_labels(self.Graph, pos, ax=self.subplot)
         nx.draw(self.Graph, pos, ax=self.subplot)
         self.canvas.draw()        
