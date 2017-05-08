@@ -31,3 +31,10 @@ class GraphView(tkinter.PanedWindow):
         pos = nx.spring_layout(self.Graph)
         nx.draw(self.Graph, pos, ax=self.subplot)
         self.canvas.draw()
+
+
+    def updateGraph(self, G):
+        self.Graph = G
+        pos = nx.spring_layout(self.Graph)
+        nx.draw(self.Graph, pos, ax=self.subplot)
+        self.canvas.draw()        
