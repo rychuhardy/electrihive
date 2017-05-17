@@ -51,3 +51,7 @@ def algorithm(initial_graph, number_of_bees):
                                                                                number_of_bees)
         best_solution = choose_best_solution({best_solution, current_best_solution})
     return best_solution
+
+
+def start_background_thread(Graph, BuildCost):
+    pass
