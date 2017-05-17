@@ -22,3 +22,5 @@ class Solution:
         if network_list is None:
             network_list = []
         self.network_list = network_list
+        self.cost = None
+        self.times_used=0
