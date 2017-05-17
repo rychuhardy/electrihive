@@ -3,10 +3,12 @@ import tkinter.filedialog
 import tkinter.messagebox
 
 from os import path
+import _thread
 
 from networkx import read_weighted_edgelist
 from networkx import set_node_attributes
 
+from algorithm import start_background_thread
 
 
 class OptionsView(tkinter.PanedWindow):
@@ -54,6 +56,7 @@ class OptionsView(tkinter.PanedWindow):
 
         self.graph = None
         self.buildCostDict = {}
+        self.files_chosen = 0
 
     def openGraphFile(self):
         filename = tkinter.filedialog.askopenfilename(**self.file_opts)
@@ -62,6 +65,7 @@ class OptionsView(tkinter.PanedWindow):
         self.vertices_button['state'] = tkinter.NORMAL
         self.vertices_label['text'] = "No file selected"
         self.root.graphview.updateGraph(self.graph)
+        self.files_chosen+=1
 
 
     def openElectricityNeedsFile(self):
@@ -83,7 +87,8 @@ class OptionsView(tkinter.PanedWindow):
         if set(vertices) <= set(self.graph.nodes()):
             for idx in range(1, len(vertices)):
                 self.graph.node[str(vertices[idx])]['cost'] = values[idx]
-
+            
+            self.files_chosen+=1
             self.vertices_label.config({'text': path.split(filename)[-1]})
             self.root.graphview.addVertexLabels(self.graph)
             
@@ -102,6 +107,11 @@ class OptionsView(tkinter.PanedWindow):
             except:
                 tkinter.messagebox.showerror(title="Expected numeric value", message="Expected integer values describing build cost in line " + str(idx))    
         self.build_cost_label.config({'text': path.split(filename)[-1]})
+        self.files_chosen+=1
 
     def runAlgorithm(self):
-        pass
+        if self.files_chosen < 3:
+            tkinter.messagebox.showerror(title="Select all files", message="Please select all three files.")
+            return
+        self.run_button['state'] = tkinter.DISABLED            
+        _thread.start_new_thread(start_background_thread, (self.graph, self.buildCostDict))

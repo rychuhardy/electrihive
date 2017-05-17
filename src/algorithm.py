@@ -50,3 +50,7 @@ def algorithm(initialGraph, number_of_bees):
         solutionSet, currentBestSolution = prepareNextIterationSolutionSet(newSolutionSet, baseSolution, number_of_bees)
         bestSolution = chooseBestSolution({bestSolution,currentBestSolution})
     return bestSolution
+
+
+def start_background_thread(Graph, BuildCost):
+    pass
