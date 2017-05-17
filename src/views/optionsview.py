@@ -36,6 +36,9 @@ class OptionsView(tkinter.PanedWindow):
         self.vertices_button = tkinter.Button(
             self, text='Electricity needs for each vertex', command=self.openElectricityNeedsFile, state=tkinter.DISABLED)
         self.vertices_label = tkinter.Label(self, text='Select edges list first')
+        self.build_cost_button = tkinter.Button(
+            self, text='Build cost', command=self.openBuildCostFile)
+        self.build_cost_label = tkinter.Label(self, text='No file selected')    
 
         self.run_button = tkinter.Button(
             self, text='Run algorithm', command=self.runAlgorithm)
@@ -44,12 +47,13 @@ class OptionsView(tkinter.PanedWindow):
         self.graph_label.grid(row=0, column=1, **self.button_opts)
         self.vertices_button.grid(row=1, column=0, **self.button_opts)
         self.vertices_label.grid(row=1, column=1, **self.button_opts)
+        self.build_cost_button.grid(row=2, column=0, **self.button_opts)
+        self.build_cost_label.grid(row=2, column=1, **self.button_opts)        
 
-        self.run_button.grid(row=2, column=0, columnspan=2, padx=20, pady=40, sticky='S')
+        self.run_button.grid(row=3, column=0, columnspan=2, padx=20, pady=40, sticky='S')
 
         self.graph = None
-        self.graph_loaded = False
-        self.electricity_needs_loaded = False
+        self.buildCostDict = {}
 
     def openGraphFile(self):
         filename = tkinter.filedialog.askopenfilename(**self.file_opts)
@@ -85,6 +89,19 @@ class OptionsView(tkinter.PanedWindow):
             
         else:
             tkinter.messagebox.showerror(title="Node values mismatch", message="The selected file specifies nodes that were not present in previous file\n")
+
+    def openBuildCostFile(self):
+        filename = tkinter.filedialog.askopenfilename(**self.file_opts)
+        lines = [line.strip() for line in open(filename)]
+        idx = 1
+        for line in lines:
+            a, b = line.split(self.separator)
+            try:
+                a, b = int(a), int(b)
+                self.buildCostDict[a] = b
+            except:
+                tkinter.messagebox.showerror(title="Expected numeric value", message="Expected integer values describing build cost in line " + str(idx))    
+        self.build_cost_label.config({'text': path.split(filename)[-1]})
 
     def runAlgorithm(self):
         pass
