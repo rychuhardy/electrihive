@@ -33,7 +33,7 @@ def generate_neighbourhood(solution, config):
 
 
 def find_best_solution_in_neighbourhood(solution, config):
-    return choose_best_solution(generate_neighbourhood(solution, config))
+    return choose_best_solution({solution} | generate_neighbourhood(solution, config))
 
 
 def stop_condition(best_solution, iterations, config):
