@@ -6,7 +6,7 @@ from tkinter import Grid
 from os import path
 import _thread
 
-from networkx import read_weighted_edgelist
+from networkx import read_edgelist
 from networkx import set_node_attributes
 
 from algorithm import start_background_thread
@@ -158,7 +158,7 @@ class OptionsView(tkinter.PanedWindow):
         if len(filename) == 0:
             return
         try:
-            self.graph = read_weighted_edgelist(path=filename, delimiter=self.separator)
+            self.graph = read_edgelist(path=filename, delimiter=self.separator, data=(('cost', int),))
             self.graph_label.config({'text': path.split(filename)[-1]})
             self.vertices_button['state'] = tkinter.NORMAL
             self.vertices_label['text'] = "No file selected"
@@ -192,7 +192,7 @@ class OptionsView(tkinter.PanedWindow):
             
         if set(vertices) <= set(self.graph.nodes()):
             for idx in range(1, len(vertices)):
-                self.graph.node[str(vertices[idx])]['cost'] = values[idx]
+                self.graph.node[str(vertices[idx])]['demand'] = values[idx]
             
             self.files_chosen+=1
             self.vertices_label.config({'text': path.split(filename)[-1]})

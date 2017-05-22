@@ -42,13 +42,13 @@ class GraphView(tkinter.PanedWindow):
         self.Graph = G
         self.subplot.clear()
         self.pos = nx.spring_layout(self.Graph)
-        edge_labels = nx.get_edge_attributes(self.Graph,  'weight')
+        edge_labels = nx.get_edge_attributes(self.Graph,  'cost')
         nx.draw_networkx_edge_labels(self.Graph, self.pos, edge_labels, ax=self.subplot, font_size=10, font_family='sans-serif',)
         nx.draw(self.Graph, self.pos, ax=self.subplot)
         self.canvas.draw()        
     
     def addVertexLabels(self, G):
         self.Graph = G
-        val_labels = nx.get_node_attributes(self.Graph, 'cost')
+        val_labels = nx.get_node_attributes(self.Graph, 'demand')
         nx.draw_networkx_labels(self.Graph, self.pos, ax=self.subplot, font_size=10, font_family='sans-serif', labels=val_labels)
         self.canvas.draw()
