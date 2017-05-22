@@ -237,10 +237,10 @@ class OptionsView(tkinter.PanedWindow):
         else:
             errMsg += "Invalid or missing number of bees\n\n"
 
-        if self.validatePreviousSolutionsNumber():
+        if self.validatePreviousSolutionsNumber() and  'beesNumber' in config and int(self.previous_solutions_entry.get()) < config['beesNumber']:
             config['previousSolutionsInIteration'] = int(self.previous_solutions_entry.get())
         else:
-            errMsg += "Invalid or missing number of previous solutions in iteration. The number of solutions should be smaller than bees number\n\n"
+            errMsg += "Invalid or missing number of previous solutions in iteration (The number of solutions should be smaller than bees number)\n\n"
         
 
         hasAnyStopCondition = False
