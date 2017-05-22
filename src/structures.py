@@ -34,10 +34,10 @@ class Network:
         self.cost = self.calculate_cost()
 
     def calculate_demand(self):
-        return sum((n["demand"] for n in self.graph.node))
+        return sum((data["demand"] for node, data in self.graph.nodes(data=True)))
 
     def calculate_cost(self):
-        cost = sum((n["cost"] for n in self.graph.node))
+        cost = sum((data["cost"] for n1, n2, data in self.graph.edges(data=True)))
         cost += self.plant.cost
         return cost
 

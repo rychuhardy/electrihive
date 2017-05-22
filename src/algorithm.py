@@ -1,5 +1,11 @@
 import random
+import networkx as nx
 from collections import Set
+from structures import Plant, Network, Solution
+
+
+def calculate_demand(graph):
+    return sum((data["demand"] for node, data in graph.nodes(data=True)))
 
 
 def generate_random_solution(base_solution):
@@ -14,8 +20,29 @@ def change_network(solution):
     pass
 
 
-def divide_network(solution):
-    pass
+def divide_network(solution, config):
+    network = random.choice(solution.network_list)
+    g = network.graph
+    node_count = len(g.nodes())
+    start_node = random.choice(g.nodes())
+
+    bfs_ordered_nodes = [e[1] for e in nx.bfs_edges(g, start_node)]
+
+    g1 = nx.Graph(g.subgraph([start_node] + bfs_ordered_nodes[:node_count//2]))
+    demand1 = calculate_demand(g1)
+    plant1 = Plant(random.choice(g1.nodes()), demand1, config.cost_of_power(demand1))
+    network1 = Network(g1, plant1)
+
+    g2 = nx.Graph(g.subgraph(bfs_ordered_nodes[node_count//2:]))
+    demand2 = calculate_demand(g2)
+    plant2 = Plant(random.choice(g2.nodes()), demand2, config.cost_of_power(demand2))
+    network2 = Network(g2, plant2)
+
+    network_list = solution.network_list.copy()
+    network_list.remove(network)
+    network_list.extend([network1, network2])
+
+    return Solution(network_list)
 
 
 def generate_neighbour(solution, config):
@@ -27,7 +54,7 @@ def generate_neighbour(solution, config):
 
 def generate_neighbourhood(solution, config):
     new_solution_set = Set()
-    for x in range(config.number_of_neighbours):
+    while len(new_solution_set) < config.number_of_neighbours:
         new_solution_set.add(generate_neighbour(solution))
     return new_solution_set
 
@@ -60,7 +87,7 @@ def count_solution_cost(solution):
         cost = 0
         for network in solution.network_list:
             cost += network.plant.cost
-            for node in network.graph:
+            for node in network.graph.node:
                 cost += node['cost']
         solution.cost = cost
     return solution.cost
