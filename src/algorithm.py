@@ -14,12 +14,23 @@ def network_from_graph(graph, config):
     return Network(graph, plant)
 
 
-def generate_random_solution(base_solution):
-    pass
+def generate_random_solution(base_solution, config):
+    network_list = []
+
+    for base_network in base_solution.network_list:
+        g = nx.Graph(base_network.graph)
+        for i in range(0, random.randint(1, len(g.edges()))):
+            g.remove_edges_from([random.choice(g.edges())])
+
+        network_list.extend(
+            network_from_graph(component, config) for component in nx.connected_component_subgraphs(g)
+        )
+
+    return Solution(network_list)
 
 
-def prepare_initial_solution_set(base_solution, n):
-    return {generate_random_solution(base_solution) for x in range(n)}
+def prepare_initial_solution_set(base_solution, n, config):
+    return {generate_random_solution(base_solution, config) for x in range(n)}
 
 
 class NetworkChangeImpossibleError(Exception):
@@ -136,7 +147,7 @@ def choose_solutions_for_next_iteration(new_solution_set, config):
 def prepare_next_iteration_solution_set(new_solution_set, base_solution, number_of_bees, config):
     selected_solution_set = choose_solutions_for_next_iteration(new_solution_set, config)
     while len(selected_solution_set) < number_of_bees:
-        selected_solution_set.add(generate_random_solution(base_solution))
+        selected_solution_set.add(generate_random_solution(base_solution, config))
     return selected_solution_set
 
 
@@ -155,7 +166,7 @@ def generate_base_solution(initial_graph, config):
 
 def algorithm(initial_graph, number_of_bees, config):
     base_solution = generate_base_solution(initial_graph, config)
-    solution_set = prepare_initial_solution_set(base_solution, number_of_bees)
+    solution_set = prepare_initial_solution_set(base_solution, number_of_bees, config)
     best_solution = None
     iterations = 0
     while not stop_condition(best_solution, iterations, config):
