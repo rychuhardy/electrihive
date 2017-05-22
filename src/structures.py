@@ -23,12 +23,8 @@ class ImmutableGraph(nx.Graph):
 
 
 class Network:
-    def __init__(self, graph=None, plant=None):
-        if graph is None:
-            graph = nx.Graph()
+    def __init__(self, graph, plant):
         self.graph = ImmutableGraph(graph)
-        if plant is None:
-            plant = Plant()
         self.plant = plant
         self.demand = self.calculate_demand()
         self.cost = self.calculate_cost()
@@ -42,7 +38,7 @@ class Network:
         return cost
 
     def is_valid(self):
-        return self.plant.power >= self.demand
+        return len(nx.connected_component_subgraphs(self.graph)) == 1 and self.plant.power >= self.demand
 
     def __hash__(self):
         return hash((self.graph, self.plant))

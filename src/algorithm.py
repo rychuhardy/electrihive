@@ -4,10 +4,12 @@ from structures import Plant, Network, Solution
 
 
 def calculate_demand(graph):
+    """Calculate and return the demand for power in a connected graph."""
     return sum((data["demand"] for node, data in graph.nodes(data=True)))
 
 
 def network_from_graph(graph, config):
+    """Create and return a valid network from a connected graph."""
     demand = calculate_demand(graph)
     plant = Plant(random.choice(graph.nodes()), demand, config.cost_of_power(demand))
 
