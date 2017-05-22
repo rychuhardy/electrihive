@@ -1,5 +1,6 @@
 import tkinter
 import matplotlib
+from tkinter import Grid
 
 matplotlib.use('TkAgg')
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
@@ -19,12 +20,16 @@ class GraphView(tkinter.PanedWindow):
 
         self.canvas = FigureCanvasTkAgg(figure, master=self)
         self.canvas.show()
-        self.canvas.get_tk_widget().grid(row=0, rowspan=8)
+        self.canvas.get_tk_widget().grid(row=0, rowspan=8, sticky=tkinter.NSEW)
 
         self.toolbar_helper_frame = tkinter.Frame(self)
-        self.toolbar_helper_frame.grid(row=8, sticky='W')
+        self.toolbar_helper_frame.grid(row=1, sticky=tkinter.NSEW)
         self.toolbar = NavigationToolbar2TkAgg(self.canvas, self.toolbar_helper_frame)
         self.toolbar.update()
+
+        Grid.rowconfigure(self, 0, weight=9)
+        Grid.rowconfigure(self, 1, weight=1)        
+        Grid.columnconfigure(self, 0, weight=1)
 
         self.Graph = nx.path_graph(0)
         # Display empty graph

@@ -1,6 +1,7 @@
 import tkinter
 import tkinter.filedialog
 import tkinter.messagebox
+from tkinter import Grid
 
 from os import path
 import _thread
@@ -25,7 +26,7 @@ class OptionsView(tkinter.PanedWindow):
     button_opts = {
         'padx': 20,
         'pady': 5,
-        'sticky': 'W'
+        'sticky': tkinter.NSEW
     }
 
     def __init__(self, root):
@@ -84,11 +85,17 @@ class OptionsView(tkinter.PanedWindow):
         self.max_iters_cond_entry.grid(row=8, column=1, **self.button_opts)
         self.min_cost_cond_label.grid(row=9, column=0, **self.button_opts)
         self.min_cost_cond_entry.grid(row=9, column=1, **self.button_opts)
-        self.network_change_probability_label.grid(row=9, column=0, **self.button_opts)
-        self.network_change_probability_entry.grid(row=9, column=1, **self.button_opts)
+        self.network_change_probability_label.grid(row=10, column=0, **self.button_opts)
+        self.network_change_probability_entry.grid(row=10, column=1, **self.button_opts)
 
-        self.run_button.grid(row=11, column=0, columnspan=2, padx=20, pady=40, sticky='S')
+        self.run_button.grid(row=11, column=0, columnspan=2, padx=20, pady=40, sticky=tkinter.NSEW)
 
+        for row_index in range(11):
+            Grid.rowconfigure(self, row_index, weight=1)
+        for col_index in range(2):
+            Grid.columnconfigure(self, col_index, weight=1)
+        Grid.rowconfigure(self, 11, weight=1)
+        
         self.graph = None
         self.buildCostDict = {}
         self.files_chosen = 0
