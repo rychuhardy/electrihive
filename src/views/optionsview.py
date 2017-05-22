@@ -217,5 +217,59 @@ class OptionsView(tkinter.PanedWindow):
         if self.files_chosen < 3:
             tkinter.messagebox.showerror(title="Select all files", message="Please select all three files.")
             return
-        self.run_button['state'] = tkinter.DISABLED            
-        _thread.start_new_thread(start_background_thread, (self.graph, self.buildCostDict))
+        
+        # Validate all Entry obj
+        config = {}
+        errMsg = "Please fix the following issues to run the algorithm\n\n"
+
+        if self.validateNeighbourNumber():
+            config['neighboursInNeighbourhood'] = int(self.neighbour_number_entry.get())
+        else:
+            errMsg += "Invalid or missing number of neighbours in neighbourhood\n\n"            
+
+        if self.validateSolutionLiveness():
+            config['solutionLiveness'] = int(self.solution_liveness_entry.get())
+        else:
+            errMsg += "Invalid or missing number of solution liveness\n\n"
+    
+        if self.validateNumberOfBees():
+            config['beesNumber'] = int(self.bees_number_entry.get())
+        else:
+            errMsg += "Invalid or missing number of bees\n\n"
+
+        if self.validatePreviousSolutionsNumber():
+            config['previousSolutionsInIteration'] = int(self.previous_solutions_entry.get())
+        else:
+            errMsg += "Invalid or missing number of previous solutions in iteration. The number of solutions should be smaller than bees number\n\n"
+        
+
+        hasAnyStopCondition = False
+        stopConditionErrMsg = "Should satisfy one of the following:\n\n"
+        if self.validateMaxIterationsNumber():
+            config['maxIterationsCondition'] = int(self.max_iters_cond_entry.get())
+            hasAnyStopCondition = True
+        else:
+            stopConditionErrMsg += "\t- Invalid or missing max iterations condition\n\n"
+
+        if self.validateMinSolutionCost():
+            config['minCostCondition'] = int(self.min_cost_cond_entry.get())
+            hasAnyStopCondition = True
+        else:
+            stopConditionErrMsg += "\t- Invalid or missing number of min cost condition\n\n"
+        
+        if not hasAnyStopCondition:
+            stopConditionErrMsg += "\n"
+            errMsg += stopConditionErrMsg
+
+
+        if self.validateNetworkChangeProbability():
+            config['networkChangeProbability'] = int(self.network_change_probability_entry.get())
+        else:
+            errMsg += "Invalid or missing probability of network change/break (should be between 0 and 100)\n\n"
+
+
+        if len(errMsg) == 0:
+            self.run_button['state'] = tkinter.DISABLED            
+            _thread.start_new_thread(start_background_thread, (self.graph, self.buildCostDict, config))
+        else:
+            tkinter.messagebox.showerror(title="Invalid configuration values", message=errMsg)            
