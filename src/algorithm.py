@@ -39,6 +39,14 @@ class NetworkChangeImpossibleError(Exception):
     pass
 
 
+class NetworkDivisionImpossibleError(Exception):
+    pass
+
+
+class UnableToGenerateNeighbourError(Exception):
+    pass
+
+
 class SwitchOperation:
     def __init__(self, edge, from_net, to_net):
         self.edge = edge
@@ -92,6 +100,9 @@ def change_network(solution, base_solution, config):
 
 
 def divide_network(solution, config):
+    if all(len(network.graph) < 2 for network in solution.network_list):
+        raise NetworkDivisionImpossibleError
+
     network = random.choice(solution.network_list)
     g = network.graph
     node_count = len(g.nodes())
@@ -118,15 +129,29 @@ def generate_neighbour(solution, base_solution, config):
         try:
             return change_network(solution, base_solution, config)
         except NetworkChangeImpossibleError:
-            return divide_network(solution, config)
+            try:
+                return divide_network(solution, config)
+            except NetworkDivisionImpossibleError:
+                raise UnableToGenerateNeighbourError
     else:
-        return divide_network(solution, config)
+        try:
+            return divide_network(solution, config)
+        except NetworkDivisionImpossibleError:
+            try:
+                return change_network(solution, base_solution, config)
+            except NetworkChangeImpossibleError:
+                raise UnableToGenerateNeighbourError
 
 
 def generate_neighbourhood(solution, base_solution, config):
     new_solution_set = set()
+
     while len(new_solution_set) < config.number_of_neighbours:
-        new_solution_set.add(generate_neighbour(solution, base_solution, config))
+        try:
+            new_solution_set.add(generate_neighbour(solution, base_solution, config))
+        except UnableToGenerateNeighbourError:
+            break
+
     return new_solution_set
 
 
