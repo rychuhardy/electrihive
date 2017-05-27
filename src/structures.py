@@ -66,3 +66,20 @@ class Solution:
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and all(network in other.network_list for network in self.network_list)
+
+
+class Config:
+
+    defaults = {
+        'change_network_chance': 0,
+        'cost_of_power': lambda x: 0,
+        'max_times_used': 0,
+        'minimal_cost': 0,
+        'number_of_max_iterations': 0,
+        'number_of_neighbours': 0,
+        'number_of_solutions': 0
+    }
+
+    def __init__(self, **kwargs):
+        for key in Config.defaults:
+            setattr(self, key, kwargs.get(key, Config.defaults[key]))

@@ -9,7 +9,7 @@ import _thread
 from networkx import read_edgelist
 from networkx import set_node_attributes
 
-from algorithm import start_background_thread
+from algorithm import algorithm_wrapper
 
 
 class OptionsView(tkinter.PanedWindow):
@@ -173,17 +173,15 @@ class OptionsView(tkinter.PanedWindow):
             filename = tkinter.filedialog.askopenfilename(**self.file_opts)
             if len(filename) == 0:
                 return
-            lines = [line.strip() for line in open(filename)]
+            lines = [line.strip() for line in open(filename) if line.strip() != '']
             vertices = []
             values = []
-            idx = 1
             for line in lines:
                 a,b = line.split(self.separator)
                 try:
                     b = int(b)
                     vertices.append(a.strip())
                     values.append(b)
-                    idx += 1
                 except:
                     tkinter.messagebox.showerror(title="Expected numeric value", message="Expected integer values describing electricity needs for each vertex in line " + str(idx))
                     break
@@ -191,7 +189,7 @@ class OptionsView(tkinter.PanedWindow):
             tkinter.messagebox.showerror(title="File not found", message="The selected file was not found or could not be open")
             
         if set(vertices) <= set(self.graph.nodes()):
-            for idx in range(1, len(vertices)):
+            for idx in range(len(vertices)):
                 self.graph.node[str(vertices[idx])]['demand'] = values[idx]
             
             self.files_chosen+=1
@@ -206,8 +204,7 @@ class OptionsView(tkinter.PanedWindow):
         if len(filename) == 0:
             return
         try:    
-            lines = [line.strip() for line in open(filename)]
-            idx = 1
+            lines = [line.strip() for line in open(filename) if line.strip() != '']
             for line in lines:
                 a, b = line.split(self.separator)
                 try:
@@ -227,25 +224,25 @@ class OptionsView(tkinter.PanedWindow):
         
         # Validate all Entry obj
         config = {}
-        errMsg = "Please fix the following issues to run the algorithm\n\n"
+        errMsg = ''
 
         if self.validateNeighbourNumber():
-            config['neighboursInNeighbourhood'] = int(self.neighbour_number_entry.get())
+            config['number_of_neighbours'] = int(self.neighbour_number_entry.get())
         else:
             errMsg += "Invalid or missing number of neighbours in neighbourhood\n\n"            
 
         if self.validateSolutionLiveness():
-            config['solutionLiveness'] = int(self.solution_liveness_entry.get())
+            config['max_times_used'] = int(self.solution_liveness_entry.get())
         else:
             errMsg += "Invalid or missing number of solution liveness\n\n"
     
         if self.validateNumberOfBees():
-            config['beesNumber'] = int(self.bees_number_entry.get())
+            config['number_of_bees'] = int(self.bees_number_entry.get())
         else:
             errMsg += "Invalid or missing number of bees\n\n"
 
-        if self.validatePreviousSolutionsNumber() and  'beesNumber' in config and int(self.previous_solutions_entry.get()) < config['beesNumber']:
-            config['previousSolutionsInIteration'] = int(self.previous_solutions_entry.get())
+        if self.validatePreviousSolutionsNumber() and 'number_of_bees' in config and int(self.previous_solutions_entry.get()) < config['number_of_bees']:
+            config['number_of_solutions'] = int(self.previous_solutions_entry.get())
         else:
             errMsg += "Invalid or missing number of previous solutions in iteration (The number of solutions should be smaller than bees number)\n\n"
         
@@ -253,13 +250,13 @@ class OptionsView(tkinter.PanedWindow):
         hasAnyStopCondition = False
         stopConditionErrMsg = "Should satisfy one of the following:\n\n"
         if self.validateMaxIterationsNumber():
-            config['maxIterationsCondition'] = int(self.max_iters_cond_entry.get())
+            config['number_of_max_iterations'] = int(self.max_iters_cond_entry.get())
             hasAnyStopCondition = True
         else:
             stopConditionErrMsg += "\t- Invalid or missing max iterations condition\n\n"
 
         if self.validateMinSolutionCost():
-            config['minCostCondition'] = int(self.min_cost_cond_entry.get())
+            config['minimal_cost'] = int(self.min_cost_cond_entry.get())
             hasAnyStopCondition = True
         else:
             stopConditionErrMsg += "\t- Invalid or missing number of min cost condition\n\n"
@@ -270,13 +267,13 @@ class OptionsView(tkinter.PanedWindow):
 
 
         if self.validateNetworkChangeProbability():
-            config['networkChangeProbability'] = int(self.network_change_probability_entry.get())
+            config['change_network_chance'] = int(self.network_change_probability_entry.get())
         else:
             errMsg += "Invalid or missing probability of network change/break (should be between 0 and 100)\n\n"
 
 
         if len(errMsg) == 0:
             self.run_button['state'] = tkinter.DISABLED            
-            _thread.start_new_thread(start_background_thread, (self.graph, self.buildCostDict, config))
+            _thread.start_new_thread(algorithm_wrapper, (self.graph, self.buildCostDict, config))
         else:
             tkinter.messagebox.showerror(title="Invalid configuration values", message=errMsg)            

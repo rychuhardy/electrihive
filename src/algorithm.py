@@ -1,6 +1,6 @@
 import random
 import networkx as nx
-from structures import Plant, Network, Solution
+from structures import Plant, Network, Solution, Config
 
 
 def calculate_demand(graph):
@@ -165,7 +165,7 @@ def stop_condition(best_solution, iterations, config):
 
 def choose_solutions_for_next_iteration(new_solution_set, config):
     prepared_solution_set = [x for x in new_solution_set if config.max_times_used > x.times_used]
-    output_solution_set = sorted(prepared_solution_set, key=lambda solution: solution.cost)[:config.number_of_solutions]
+    output_solution_set = set(sorted(prepared_solution_set, key=lambda solution: solution.cost)[:config.number_of_solutions])
     for x in output_solution_set:
         x.times_used += 1
     return output_solution_set
@@ -175,11 +175,11 @@ def prepare_next_iteration_solution_set(new_solution_set, base_solution, number_
     selected_solution_set = choose_solutions_for_next_iteration(new_solution_set, config)
     while len(selected_solution_set) < number_of_bees:
         selected_solution_set.add(generate_random_solution(base_solution, config))
-    return selected_solution_set
+    return selected_solution_set, choose_best_solution(selected_solution_set)
 
 
 def choose_best_solution(solution_set):
-    return max(solution_set, key=lambda solution: solution.cost)
+    return min(solution_set, key=lambda solution: solution.cost)
 
 
 def generate_base_solution(initial_graph, config):
@@ -194,16 +194,28 @@ def generate_base_solution(initial_graph, config):
 def algorithm(initial_graph, number_of_bees, config):
     base_solution = generate_base_solution(initial_graph, config)
     solution_set = prepare_initial_solution_set(base_solution, number_of_bees, config)
-    best_solution = None
+    best_solution = choose_best_solution(solution_set)
     iterations = 0
     while not stop_condition(best_solution, iterations, config):
         new_solution_set = {find_best_solution_in_neighbourhood(solution, base_solution, config) for solution in solution_set}
-        solution_set, current_best_solution = prepare_next_iteration_solution_set(new_solution_set, base_solution,
-                                                                               number_of_bees, config)
+        solution_set, current_best_solution = prepare_next_iteration_solution_set(
+                new_solution_set, base_solution, number_of_bees, config)
         best_solution = choose_best_solution({best_solution, current_best_solution})
         iterations += 1
     return best_solution
 
 
-def start_background_thread(Graph, BuildCost):
-    pass
+def algorithm_wrapper(graph, build_cost, config_dict):
+    """Prepare arguments for the algorithm, run the algorithm and return the results."""
+    def const_spline_interp(key_val_dict):
+        def interpolant(x):
+            min_gteq_key = min((k for k in key_val_dict if k >= x), default=None)
+            return key_val_dict.get(min_gteq_key, None)
+        return interpolant
+
+    config_dict['cost_of_power'] = const_spline_interp(build_cost)
+
+    config = Config(**config_dict)
+    number_of_bees = config_dict['number_of_bees']
+
+    return algorithm(graph, number_of_bees, config)
