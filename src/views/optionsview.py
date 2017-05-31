@@ -173,15 +173,20 @@ class OptionsView(tkinter.PanedWindow):
             filename = tkinter.filedialog.askopenfilename(**self.file_opts)
             if len(filename) == 0:
                 return
-            lines = [line.strip() for line in open(filename) if line.strip() != '']
+            lines = [line.strip() for line in open(filename)]
             vertices = []
             values = []
+            idx = 1
             for line in lines:
+		if line == '':
+		    idx += 1
+		    continue
                 a,b = line.split(self.separator)
                 try:
                     b = int(b)
                     vertices.append(a.strip())
                     values.append(b)
+                    idx += 1
                 except:
                     tkinter.messagebox.showerror(title="Expected numeric value", message="Expected integer values describing electricity needs for each vertex in line " + str(idx))
                     break
@@ -204,12 +209,18 @@ class OptionsView(tkinter.PanedWindow):
         if len(filename) == 0:
             return
         try:    
-            lines = [line.strip() for line in open(filename) if line.strip() != '']
+            lines = [line.strip() for line in open(filename)]
+            idx = 1
             for line in lines:
+		if line == '':
+		    idx += 1
+		    continue
+                a,b = line.sp
                 a, b = line.split(self.separator)
                 try:
                     a, b = int(a), int(b)
                     self.buildCostDict[a] = b
+                    idx += 1
                 except:
                     tkinter.messagebox.showerror(title="Expected numeric value", message="Expected integer values describing build cost in line " + str(idx))    
             self.build_cost_label.config({'text': path.split(filename)[-1]})
