@@ -1,7 +1,9 @@
 import tkinter
 from views.graphview import GraphView
 from views.optionsview import OptionsView
+from views.solutionview import SolutionView
 from tkinter import Grid
+
 
 class Window(tkinter.Frame):
 
@@ -16,14 +18,19 @@ class Window(tkinter.Frame):
 
         self.optionsview = OptionsView(self)
         self.graphview = GraphView(self)
+        self.solutionview = SolutionView(self)
 
         Grid.rowconfigure(self, 0, weight=1)
+        Grid.rowconfigure(self, 2, weight=1)
         Grid.columnconfigure(self, 0, weight=1)
         Grid.columnconfigure(self, 1, weight=4)
-        
-        self.optionsview.grid(row=0, column=0, columnspan=1, sticky=tkinter.NSEW)
-        self.graphview.grid(row=0, column=1, columnspan=5, sticky=tkinter.NSEW)       
 
+        self.optionsview.grid(
+            row=0, column=0, columnspan=1, sticky=tkinter.NSEW)
+        self.graphview.grid(row=0, column=1, columnspan=5,
+                            rowspan=2, sticky=tkinter.NSEW)
+        self.solutionview.grid(
+            row=1, column=0, columnspan=1, sticky=tkinter.NSEW)
 
     def mainloop(self):
         self.root.mainloop()
