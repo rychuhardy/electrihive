@@ -31,9 +31,9 @@ class SolutionView(tkinter.PanedWindow):
 
 
     def setSolution(self, solution):
-        #self.iter_num_label['text'] += solution.get_iterations_number()
-        #self.end_condition['text'] += solution.get_end_condition()
-        self.total_cost['text'] += solution.cost
+        #self.iter_num_label['text'] += str(solution.get_iterations_number())
+        #self.end_condition['text'] += str(solution.get_end_condition())
+        self.total_cost['text'] += str(solution.cost)
         self.root.graphview.setSolutionView(solution.network_list)
 
 
