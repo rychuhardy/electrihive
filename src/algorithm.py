@@ -205,7 +205,7 @@ def algorithm(initial_graph, number_of_bees, config):
     return best_solution
 
 
-def algorithm_wrapper(graph, build_cost, config_dict):
+def algorithm_wrapper(root, graph, build_cost, config_dict):
     """Prepare arguments for the algorithm, run the algorithm and return the results."""
     def const_spline_interp(key_val_dict):
         def interpolant(x):
@@ -218,4 +218,6 @@ def algorithm_wrapper(graph, build_cost, config_dict):
     config = Config(**config_dict)
     number_of_bees = config_dict['number_of_bees']
 
-    return algorithm(graph, number_of_bees, config)
+    solution = algorithm(graph, number_of_bees, config)
+    root.solutionview.setSolution(solution)
+    

@@ -28,7 +28,7 @@ class GraphView(tkinter.PanedWindow):
         self.toolbar.update()
 
         Grid.rowconfigure(self, 0, weight=9)
-        Grid.rowconfigure(self, 1, weight=1)        
+        Grid.rowconfigure(self, 1, weight=1)
         Grid.columnconfigure(self, 0, weight=1)
 
         self.Graph = nx.path_graph(0)
@@ -43,12 +43,24 @@ class GraphView(tkinter.PanedWindow):
         self.subplot.clear()
         self.pos = nx.spring_layout(self.Graph)
         edge_labels = nx.get_edge_attributes(self.Graph,  'cost')
-        nx.draw_networkx_edge_labels(self.Graph, self.pos, edge_labels, ax=self.subplot, font_size=10, font_family='sans-serif',)
+        nx.draw_networkx_edge_labels(
+            self.Graph, self.pos, edge_labels, ax=self.subplot, font_size=10, font_family='sans-serif',)
         nx.draw(self.Graph, self.pos, ax=self.subplot)
-        self.canvas.draw()        
-    
+        self.canvas.draw()
+
     def addVertexLabels(self, G):
         self.Graph = G
         val_labels = nx.get_node_attributes(self.Graph, 'demand')
-        nx.draw_networkx_labels(self.Graph, self.pos, ax=self.subplot, font_size=10, font_family='sans-serif', labels=val_labels)
+        nx.draw_networkx_labels(self.Graph, self.pos, ax=self.subplot,
+                                font_size=10, font_family='sans-serif', labels=val_labels)
+        self.canvas.draw()
+
+    def setSolutionView(self, network_list):
+        poses = map(lambda network: nx.spring_layout(network.graph), network_list)
+        shift = 0
+        for idx, pos in enumerate(poses):
+            for k, v in pos.items():
+                v[0] = v[0] + shift
+            shift += 10
+            nx.draw(network_list[idx].graph, pos, ax=self.subplot)
         self.canvas.draw()

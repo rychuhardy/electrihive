@@ -227,7 +227,6 @@ class OptionsView(tkinter.PanedWindow):
                 if line == '':
                     idx += 1
                     continue
-                a, b = line.sp
                 a, b = line.split(self.separator)
                 try:
                     a, b = int(a), int(b)
@@ -302,7 +301,7 @@ class OptionsView(tkinter.PanedWindow):
         if len(errMsg) == 0:
             self.run_button['state'] = tkinter.DISABLED
             _thread.start_new_thread(
-                algorithm_wrapper, (self.graph, self.buildCostDict, config))
+                algorithm_wrapper, (self.root, self.graph, self.buildCostDict, config))
         else:
             tkinter.messagebox.showerror(
                 title="Invalid configuration values", message=errMsg)
