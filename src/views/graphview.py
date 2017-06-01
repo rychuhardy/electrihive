@@ -56,11 +56,19 @@ class GraphView(tkinter.PanedWindow):
         self.canvas.draw()
 
     def setSolutionView(self, network_list):
+        self.subplot.clear()
         poses = map(lambda network: nx.spring_layout(network.graph), network_list)
         shift = 0
         for idx, pos in enumerate(poses):
             for k, v in pos.items():
                 v[0] = v[0] + shift
             shift += 10
+            val_labels = nx.get_node_attributes(network_list[idx].graph, 'demand')
+            nx.draw_networkx_labels(network_list[idx].graph, pos, ax=self.subplot, font_size=10, font_family='sans-serif', labels=val_labels)
+            
+            edge_labels = nx.get_edge_attributes(network_list[idx].graph,  'cost')
+            nx.draw_networkx_edge_labels(network_list[idx].graph, pos, edge_labels, ax=self.subplot, font_size=10, font_family='sans-serif',)
+       
             nx.draw(network_list[idx].graph, pos, ax=self.subplot)
+
         self.canvas.draw()
