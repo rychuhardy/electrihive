@@ -3,6 +3,7 @@ from views.graphview import GraphView
 from views.optionsview import OptionsView
 from views.solutionview import SolutionView
 from tkinter import Grid
+from threading import Lock
 
 
 class Window(tkinter.Frame):
@@ -11,6 +12,9 @@ class Window(tkinter.Frame):
         self.root = tkinter.Tk()
         self.root.wm_title("Electrihive")
         tkinter.Frame.__init__(self, self.root)
+
+        self.mutex = Lock()
+        self.solution = None
 
         Grid.rowconfigure(self.root, 0, weight=1)
         Grid.columnconfigure(self.root, 0, weight=1)
@@ -33,4 +37,22 @@ class Window(tkinter.Frame):
             row=1, column=0, columnspan=1, sticky=tkinter.NSEW)
 
     def mainloop(self):
+        self.root.after(2000, self.checkIfAlgorithmFinished)
         self.root.mainloop()
+    
+    def setSolution(self, solution):
+        try:
+            self.mutex.acquire()
+            self.solution = solution
+        finally:
+            self.mutex.release()
+
+    def checkIfAlgorithmFinished(self):
+        try:
+            self.mutex.acquire()
+            if self.solution is None:
+                self.root.after(2000, self.checkIfAlgorithmFinished)
+            else:
+                self.solutionview.setSolution(self.solution)
+        finally:
+            self.mutex.release()

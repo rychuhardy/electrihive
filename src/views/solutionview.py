@@ -35,5 +35,6 @@ class SolutionView(tkinter.PanedWindow):
         #self.end_condition['text'] += str(solution.get_end_condition())
         self.total_cost['text'] += str(solution.cost)
         self.root.graphview.setSolutionView(solution.network_list)
+        self.root.optionsview.unlockRunButton()
 
 

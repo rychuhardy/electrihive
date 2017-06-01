@@ -115,6 +115,10 @@ class OptionsView(tkinter.PanedWindow):
         self.graph = None
         self.buildCostDict = {}
         self.files_chosen = 0
+    
+    
+    def unlockRunButton(self):
+        self.run_button['state'] = tkinter.NORMAL
 
     def validatePositiveNumber(self, field):
         text = field.get()

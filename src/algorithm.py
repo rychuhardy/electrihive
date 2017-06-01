@@ -219,5 +219,5 @@ def algorithm_wrapper(root, graph, build_cost, config_dict):
     number_of_bees = config_dict['number_of_bees']
 
     solution = algorithm(graph, number_of_bees, config)
-    root.solutionview.setSolution(solution)
+    root.setSolution(solution)
     
