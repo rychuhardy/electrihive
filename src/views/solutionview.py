@@ -30,8 +30,8 @@ class SolutionView(tkinter.PanedWindow):
             Grid.columnconfigure(self, col_index, weight=1)    
 
 
-    def setSolution(self, solution):
-        #self.iter_num_label['text'] += str(solution.get_iterations_number())
+    def setSolution(self, solution, iter_count):
+        self.iter_num_label['text'] += str(iter_count)
         #self.end_condition['text'] += str(solution.get_end_condition())
         self.total_cost['text'] += str(solution.cost)
         self.root.graphview.setSolutionView(solution.network_list)

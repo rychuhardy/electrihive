@@ -160,7 +160,7 @@ def find_best_solution_in_neighbourhood(solution, base_solution, config):
 
 
 def stop_condition(best_solution, iterations, config):
-    return iterations > config.number_of_max_iterations or best_solution.cost < config.minimal_cost
+    return not iterations < config.number_of_max_iterations or best_solution.cost < config.minimal_cost
 
 
 def choose_solutions_for_next_iteration(new_solution_set, config):
@@ -202,7 +202,7 @@ def algorithm(initial_graph, number_of_bees, config):
                 new_solution_set, base_solution, number_of_bees, config)
         best_solution = choose_best_solution({best_solution, current_best_solution})
         iterations += 1
-    return best_solution
+    return best_solution, iterations
 
 
 def algorithm_wrapper(root, graph, build_cost, config_dict):
@@ -218,6 +218,6 @@ def algorithm_wrapper(root, graph, build_cost, config_dict):
     config = Config(**config_dict)
     number_of_bees = config_dict['number_of_bees']
 
-    solution = algorithm(graph, number_of_bees, config)
-    root.setSolution(solution)
+    solution, iter_count = algorithm(graph, number_of_bees, config)
+    root.setSolution(solution, iter_count)
     

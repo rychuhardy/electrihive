@@ -15,6 +15,7 @@ class Window(tkinter.Frame):
 
         self.mutex = Lock()
         self.solution = None
+        self.iter_count = None
 
         Grid.rowconfigure(self.root, 0, weight=1)
         Grid.columnconfigure(self.root, 0, weight=1)
@@ -40,10 +41,11 @@ class Window(tkinter.Frame):
         self.root.after(2000, self.checkIfAlgorithmFinished)
         self.root.mainloop()
     
-    def setSolution(self, solution):
+    def setSolution(self, solution, iter_count):
         try:
             self.mutex.acquire()
             self.solution = solution
+            self.iter_count = iter_count
         finally:
             self.mutex.release()
 
@@ -53,6 +55,6 @@ class Window(tkinter.Frame):
             if self.solution is None:
                 self.root.after(2000, self.checkIfAlgorithmFinished)
             else:
-                self.solutionview.setSolution(self.solution)
+                self.solutionview.setSolution(self.solution, self.iter_count)
         finally:
             self.mutex.release()
