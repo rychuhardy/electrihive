@@ -1,3 +1,4 @@
+import sys
 import random
 import networkx as nx
 from structures import Plant, Network, Solution, Config
@@ -105,16 +106,17 @@ def divide_network(solution, config):
 
     network = random.choice(solution.network_list)
     g = network.graph
-    node_count = len(g.nodes())
-    start_node = random.choice(g.nodes())
-    partition = random.randint(0, node_count - 2)
 
-    bfs_ordered_nodes = [e[1] for e in nx.bfs_edges(g, start_node)]
+    node = random.choice([
+            n for n in g.nodes() if nx.is_connected(
+                    g.subgraph(other for other in g.nodes() if other != n)
+            )
+    ])
 
-    g1 = g.subgraph([start_node] + bfs_ordered_nodes[:partition])
+    g1 = g.subgraph([node])
     network1 = network_from_graph(g1, config)
 
-    g2 = g.subgraph(bfs_ordered_nodes[partition:])
+    g2 = g.subgraph(other for other in g.nodes() if other != node)
     network2 = network_from_graph(g2, config)
 
     network_list = solution.network_list.copy()
@@ -195,13 +197,16 @@ def algorithm(initial_graph, number_of_bees, config):
     base_solution = generate_base_solution(initial_graph, config)
     solution_set = prepare_initial_solution_set(base_solution, number_of_bees, config)
     best_solution = choose_best_solution(solution_set)
+    print(best_solution.cost)
     iterations = 0
     while not stop_condition(best_solution, iterations, config):
         new_solution_set = {find_best_solution_in_neighbourhood(solution, base_solution, config) for solution in solution_set}
         solution_set, current_best_solution = prepare_next_iteration_solution_set(
                 new_solution_set, base_solution, number_of_bees, config)
         best_solution = choose_best_solution({best_solution, current_best_solution})
+        print(best_solution.cost)
         iterations += 1
+    sys.stdout.flush()
     return best_solution, iterations
 
 
