@@ -57,6 +57,7 @@ class GraphView(tkinter.PanedWindow):
         val_labels = nx.get_node_attributes(self.Graph, 'demand')
         nx.draw_networkx_labels(self.Graph, self.pos, ax=self.subplot,
                                 font_size=10, font_family='sans-serif', labels=val_labels)
+        print(self.pos)                                
         self.canvas.draw()
 
     def setSolutionView(self, network_list):
@@ -64,24 +65,42 @@ class GraphView(tkinter.PanedWindow):
         cmap = plt.get_cmap('gnuplot')
         colors = [cmap(i) for i in np.linspace(0.25, 1, colors_count)]
 
-        # edge_labels = nx.get_edge_attributes(self.Graph,  'cost')
-        # vertex_labels = nx.get_node_attributes(self.Graph, 'demand')
-
         nodes_colors = self.Graph.nodes()[:]
         plant_nodes = []
         plant_nodes_colors = []
+        plant_power_label = {}
+        plant_cost_label = {}
+        
 
         for idx in range(colors_count):
             plant_nodes.append(network_list[idx].plant.node)
-            plant_nodes_colors.append(colors[idx])            
+            plant_nodes_colors.append(colors[idx])  
+
             for node in network_list[idx].graph.nodes():
+                plant_power_label[str(node)] = ""
+                plant_cost_label[str(node)] = ""   
                 nodes_colors[nodes_colors.index(node)] = colors[idx]
 
+            plant_power_label[str(network_list[idx].plant.node)] = str(network_list[idx].plant.power)
+            plant_cost_label[str(network_list[idx].plant.node)] = str(network_list[idx].cost)    
+        
+        print(plant_power_label)
         nx.draw_networkx_nodes(self.Graph, pos=self.pos, ax=self.subplot, node_color=nodes_colors)
-        # nx.draw_networkx_labels(network_list[idx].graph, pos, ax=self.subplot, font_size=10, font_family='sans-serif', labels=vertex_labels)
 
         
+
         nx.draw_networkx_nodes(self.Graph, pos=self.pos, ax=self.subplot, nodelist=plant_nodes, node_color=plant_nodes_colors, node_shape='s')
 
+        label_pos = dict(self.pos);
+        for k,v in label_pos.items():
+            v[1] += 0.04
+
+        nx.draw_networkx_labels(self.Graph, pos=label_pos, ax=self.subplot, labels=plant_power_label, font_color='b')
+
+        for k,v in label_pos.items():
+            v[1] += 0.04
+
+        nx.draw_networkx_labels(self.Graph, pos=label_pos, ax=self.subplot, labels=plant_cost_label, font_color='g')
+        
 
         self.canvas.draw()
