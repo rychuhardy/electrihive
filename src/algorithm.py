@@ -102,6 +102,9 @@ def change_network(solution, base_solution, config):
             (edge[0] in to_net.graph and edge[1] in from_net.graph and node_removal_valid(from_net.graph, edge[1])))
     ]
 
+    if len(possible_switches) == 0:
+        raise NetworkChangeImpossibleError
+
     return random.choice(possible_switches).perform(solution, config)
 
 
