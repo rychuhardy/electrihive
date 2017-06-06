@@ -282,6 +282,8 @@ class OptionsView(tkinter.PanedWindow):
         if self.validateMaxIterationsNumber():
             config['number_of_max_iterations'] = int(
                 self.max_iters_cond_entry.get())
+            self.requested_iter_num = int(
+                self.max_iters_cond_entry.get())
             hasAnyStopCondition = True
         else:
             stopConditionErrMsg += "\t- Invalid or missing max iterations condition\n\n"

@@ -57,7 +57,6 @@ class GraphView(tkinter.PanedWindow):
         val_labels = nx.get_node_attributes(self.Graph, 'demand')
         nx.draw_networkx_labels(self.Graph, self.pos, ax=self.subplot,
                                 font_size=10, font_family='sans-serif', labels=val_labels)
-        print(self.pos)                                
         self.canvas.draw()
 
     def setSolutionView(self, network_list):
@@ -84,7 +83,6 @@ class GraphView(tkinter.PanedWindow):
             plant_power_label[str(network_list[idx].plant.node)] = str(network_list[idx].plant.power)
             plant_cost_label[str(network_list[idx].plant.node)] = str(network_list[idx].cost)    
         
-        print(plant_power_label)
         nx.draw_networkx_nodes(self.Graph, pos=self.pos, ax=self.subplot, node_color=nodes_colors)
 
         

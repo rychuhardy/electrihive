@@ -32,7 +32,7 @@ class SolutionView(tkinter.PanedWindow):
 
     def setSolution(self, solution, iter_count):
         self.iter_num_label['text'] += str(iter_count)
-        #self.end_condition['text'] += str(solution.get_end_condition())
+        self.end_condition['text'] += " Max iterations reached" if iter_count == self.root.optionsview.requested_iter_num else " Min cost reached"
         self.total_cost['text'] += str(solution.cost)
         self.root.graphview.setSolutionView(solution.network_list)
         self.root.optionsview.unlockRunButton()
