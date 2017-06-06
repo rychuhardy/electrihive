@@ -104,7 +104,7 @@ def divide_network(solution, config):
     if all(len(network.graph) < 2 for network in solution.network_list):
         raise NetworkDivisionImpossibleError
 
-    network = random.choice(solution.network_list)
+    network = random.choice([network for network in solution.network_list if len(network.graph) >= 2])
     g = network.graph
 
     node = random.choice([
