@@ -80,6 +80,11 @@ def change_network(solution, base_solution, config):
     if len(solution.network_list) < 2:
         raise NetworkChangeImpossibleError
 
+    def node_removal_valid(graph, node):
+        if len(graph) <= 2:
+            return True
+        return nx.is_connected(graph.subgraph(n for n in graph.nodes() if n != node))
+
     possible_switches = [
         SwitchOperation(
             edge,
@@ -93,8 +98,8 @@ def change_network(solution, base_solution, config):
         for edge in base_network.graph.edges_iter(data=True)
 
         if (from_net != to_net) and
-        ((edge[0] in from_net.graph and edge[1] in to_net.graph) or
-            (edge[0] in to_net.graph and edge[1] in from_net.graph))
+        ((edge[0] in from_net.graph and edge[1] in to_net.graph and node_removal_valid(from_net.graph, edge[0])) or
+            (edge[0] in to_net.graph and edge[1] in from_net.graph and node_removal_valid(from_net.graph, edge[1])))
     ]
 
     return random.choice(possible_switches).perform(solution, config)
